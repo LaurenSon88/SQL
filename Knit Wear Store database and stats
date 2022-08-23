@@ -1,0 +1,32 @@
+--Create a winter clothing store database
+
+CREATE TABLE knit_wear (id INTEGER PRIMARY KEY, item TEXT, size TEXT, colour TEXT, price$ INTEGER, quantity INTEGER);
+
+INSERT INTO knit_wear VALUES
+(1, "Pull Over Knit", "S", "Grey", 100, 5),
+(2, "Pull Over Knit", "M", "Grey", 120, 10),
+(3, "Pull Over Knit", "L", "Grey", 150, 8),
+(4, "Pull Over Knit", "S", "Beige", 100, 15),
+(5, "Pull Over Knit", "M", "Beige", 120, 12),
+(6, "Pull Over Knit", "L", "Beige", 150, 18),
+(7, "Cardigan", "S", "Light Blue", 200, 21),
+(8, "Cardigan", "M", "Light Blue", 210, 16),
+(9, "Cardigan", "L", "Light Blue", 230, 2),
+(10, "Cardigan", "S", "Green", 200, 11),
+(11, "Cardigan", "M", "Green", 210, 4),
+(12, "Cardigan", "L", "Green", 230, 21),
+(13, "Gloves", "Pink", "One size", 80, 3),
+(14, "Gloves", "Beige", "One size", 80,6),
+(15, "Gloves", "Grey", "One size", 80, 11);
+
+--display the whole database.
+SELECT * FROM knit_wear;
+
+--display the database ordered by price.
+SELECT * FROM knit_wear ORDER BY price$ ASC;
+
+--what is the total number of items in the store?
+SELECT sum(quantity) FROM knit_wear;
+
+--How much could the your total earnings be?
+SELECT sum(price$*quantity) AS total_earnings FROM knit_wear;
