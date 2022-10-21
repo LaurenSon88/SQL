@@ -1,0 +1,104 @@
+--MAVEN PIZZA CHALLENGE
+--The dataset comes from Plato's Pizza (ficticious). It provides 2015 sales orders, order details, and the types of pizzas available and sold.
+-- OBJECTIVE: Anaylze the data to help Plato's Pizza improve operations, drive more sales and work more efficiently.
+
+--#1 Total number of pizzas ordered in 2015
+SELECT SUM(quantity) AS pizzas_sold
+FROM order_details;
+
+--#2 Total revenues generated in 2015
+SELECT ROUND(SUM(quantity*price),2) AS total_revenue
+FROM order_details
+LEFT JOIN pizzas
+ ON order_details.pizza_id = pizzas.pizza_id;
+
+--#3 Average price of a pizza from Plato's Pizza
+SELECT *
+FROM pizzas;
+
+SELECT ROUND(SUM(quantity*price)/SUM(quantity),2) AS average_price
+FROM order_details
+LEFT JOIN pizzas
+ ON order_details.pizza_id = pizzas.pizza_id;
+ 
+--#4 Which pizzas are selling below average price and which are selling above average?
+SELECT pizza_id,
+CASE WHEN price >=16.5 THEN 'above_average' ELSE 'below_average' END AS price_variation
+FROM pizzas
+WHERE price_variation = 'above_average';
+
+SELECT pizza_id,
+CASE WHEN price >=16.5 THEN 'above_average' ELSE 'below_average' END AS price_variation
+FROM pizzas
+WHERE price_variation = 'below_average';
+
+SELECT pizza_id,
+CASE WHEN price >=16.5 THEN 'above_average' ELSE 'below_average' END AS price_variation
+FROM pizzas
+WHERE price_variation = 'below_average' AND pizza_id NOT LIKE '%_s';
+
+--#5 Average order value
+WITH total_spend AS(
+    SELECT order_id,SUM(quantity*price) AS total_spend
+    FROM order_details
+    LEFT JOIN pizzas
+     ON order_details.pizza_id = pizzas.pizza_id
+    GROUP BY order_id)
+SELECT ROUND((SUM(total_spend)/21350),2) AS avg_order_value
+FROM total_spend;
+
+--#6 Average amount spent per customer
+WITH total_spend AS (
+SELECT order_id,SUM(quantity*price) AS total_spend
+FROM order_details
+LEFT JOIN pizzas
+    ON order_details.pizza_id = pizzas.pizza_id
+GROUP BY order_id)
+SELECT total_spend.order_id,ROUND(total_spend/SUM(quantity),2) AS avg_spend
+FROM total_spend
+JOIN order_details
+ON total_spend.order_id = order_details.order_id
+GROUP BY total_spend.order_id;
+
+--#7 Which is the best selling pizza?
+SELECT pizza_type_id, ROUND(SUM(price*quantity),2) AS revenue
+FROM order_details
+JOIN pizzas ON pizzas.pizza_id = order_details.pizza_id
+GROUP BY pizza_type_id
+ORDER BY revenue DESC
+LIMIT 1;
+
+--#8 Which is the worst selling pizzas?
+SELECT pizza_type_id, ROUND(SUM(price*quantity),2) AS revenue
+FROM order_details
+JOIN pizzas ON pizzas.pizza_id = order_details.pizza_id
+GROUP BY pizza_type_id
+ORDER BY revenue
+LIMIT 1;
+
+--#9 Quantity of orders per pizza type and size
+SELECT pizza_id, SUM(quantity) quantity
+    FROM order_details
+    GROUP BY pizza_id
+    ORDER BY pizza_id;
+
+--#10 Month with the most orders
+;SELECT
+CASE
+WHEN date BETWEEN '2015-01-01' AND '2015-01-31' THEN 'January'
+WHEN date BETWEEN '2015-02-01' AND '2015-02-28' THEN 'February'
+WHEN date BETWEEN '2015-03-01' AND '2015-03-31' THEN 'March'
+WHEN date BETWEEN '2015-04-01' AND '2015-04-30' THEN 'April'
+WHEN date BETWEEN '2015-05-01' AND '2015-05-31' THEN 'May'
+WHEN date BETWEEN '2015-06-01' AND '2015-06-31' THEN 'June'
+WHEN date BETWEEN '2015-07-01' AND '2015-07-31' THEN 'July'
+WHEN date BETWEEN '2015-08-01' AND '2015-08-31' THEN 'August'
+WHEN date BETWEEN '2015-09-01' AND '2015-09-31' THEN 'September'
+WHEN date BETWEEN '2015-10-01' AND '2015-10-31' THEN 'October'
+WHEN date BETWEEN '2015-11-01' AND '2015-11-31' THEN 'Novemeber'
+ELSE 'December'
+END AS "Month", COUNT(order_id) AS order_count
+FROM orders
+GROUP BY month
+ORDER BY order_count desc
+LIMIT 1;
